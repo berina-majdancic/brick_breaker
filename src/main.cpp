@@ -2,8 +2,7 @@
 #include <math.h>
 
 #include <iostream>
-
-#include "../include/paddle.hpp"
+#include <paddle.hpp>
 
 int main() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
