@@ -6,3 +6,8 @@ Features
     Brick Layout: Break bricks to score points and clear levels.
     Ball Mechanics: The ball bounces off walls, the paddle, and bricks.
     Score Tracking: Keep track of the player's score.
+
+Prerequisites
+
+    C++ Compiler: Make sure you have a compiler that supports C++11 or higher.
+    SDL2: Install SDL2 development libraries.
