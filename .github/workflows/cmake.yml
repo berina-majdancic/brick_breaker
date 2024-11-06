@@ -14,16 +14,26 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install CMake
         run: |
           sudo apt update
           sudo apt install -y cmake
 
+- name: Cache CMake build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache
+            build
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
+
       - name: Configure CMake
         run: |
-          mkdir build
+          mkdir -p build
           cd build
           cmake ..
 
@@ -31,4 +41,3 @@ jobs:
         run: |
           cd build
           cmake --build .
-
