@@ -39,3 +39,18 @@ void Ball::render(SDL_Renderer* renderer) {
     }
   }
 }
+
+void Ball::move(Paddle& paddle) {
+  centre_x_ += speed_x_;
+  if (centre_x_ - radius_ <= 0 || centre_x_ + radius_ >= window_width_) {
+    speed_x_ = -(speed_x_);
+  }
+  centre_y_ += speed_y_;
+  if (centre_y_ - radius_ <= 0 || centre_y_ + radius_ >= window_height_)
+    speed_y_ = -(speed_y_);
+  if (centre_x_ + radius_ >= paddle.get_x() &&
+      centre_y_ + radius_ >= paddle.get_y()) {
+    speed_x_ = -(speed_x_);
+    speed_y_ = -(speed_y_);
+    }
+}

@@ -35,15 +35,17 @@ int main() {
     SDL_RenderClear(renderer);
     paddle.render(renderer);
     ball.render(renderer);
+    ball.move(paddle);
+
     // Swap the buffers
     SDL_RenderPresent(renderer);
-
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) running = false;
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
           case SDLK_LEFT:
             paddle.move(Direction::left);
+
             break;
           case SDLK_RIGHT:
             paddle.move(Direction::right);

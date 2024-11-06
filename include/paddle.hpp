@@ -15,6 +15,8 @@ class Paddle {
   }
   void render(SDL_Renderer* renderer);
   void move(Direction direction);
+  int get_x() { return x_; }
+  int get_y() { return y_; }
 
  private:
   int window_width_, window_height_;
