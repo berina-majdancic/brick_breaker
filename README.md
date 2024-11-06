@@ -1,5 +1,6 @@
 # brick_breaker
 A simple Brick Breaker game built with C++ and SDL2. This classic arcade game challenges players to control a paddle and destroy all the bricks by bouncing a ball. It's a fun and beginner-friendly project that showcases basic game mechanics and graphics programming.
+This project uses CMake for build automation and integrates the Clang Formatter for consistent code formatting.
 Features
 
     Paddle Movement: Use arrow keys to move the paddle left and right.
