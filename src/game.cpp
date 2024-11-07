@@ -15,11 +15,12 @@ void Game::initialize() {
               << std::endl;
     SDL_Quit();
   }
-  renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
-  paddle_ = Paddle(window_width_, window_height_, renderer_);
-  ball_ = Ball(window_width_, window_height_, paddle_, renderer_);
-}
+  renderer_ = SDL_CreateRenderer(
+      window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
+  paddle_ = Paddle(window_width_, window_height_, renderer_);
+  ball_ = Ball(window_width_, window_height_, &paddle_, renderer_);
+}
 void Game::run() {
   initialize();
   Uint64 current_time, last_time = SDL_GetPerformanceCounter();
@@ -29,17 +30,20 @@ void Game::run() {
     current_time = SDL_GetPerformanceCounter();
     delta_time_ = (double)((current_time - last_time) * 1000 /
                            (double)SDL_GetPerformanceFrequency());
-
+    if (delta_time_ < 16.67) {
+      SDL_Delay(static_cast<Uint32>(16.67 - delta_time_));
+    }
+    delta_time_ = (double)((current_time - last_time) * 1000 /
+                           (double)SDL_GetPerformanceFrequency());
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
     SDL_RenderClear(renderer_);
 
     paddle_.render();
     ball_.render();
     ball_.move(delta_time_);
-
+    handle_input();
     // Swap the buffers
     SDL_RenderPresent(renderer_);
-    handle_input();
     last_time = current_time;
   }
 
@@ -50,18 +54,13 @@ void Game::handle_input() {
   SDL_Event event;
 
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT)
-      running_ = false;
-    else if (event.type == SDL_KEYDOWN) {
-      switch (event.key.keysym.sym) {
-        case SDLK_LEFT:
-          paddle_.move(Direction::left, delta_time_);
-
-          break;
-        case SDLK_RIGHT:
-          paddle_.move(Direction::right, delta_time_);
-          break;
-      }
-    }
+    if (event.type == SDL_QUIT) running_ = false;
+  }
+  const Uint8* keystate = SDL_GetKeyboardState(nullptr);
+  if (keystate[SDL_SCANCODE_LEFT]) {
+    paddle_.move(Direction::left, delta_time_);
+  }
+  if (keystate[SDL_SCANCODE_RIGHT]) {
+    paddle_.move(Direction::right, delta_time_);
   }
 }
