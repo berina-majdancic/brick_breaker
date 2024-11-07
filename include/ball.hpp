@@ -21,9 +21,9 @@ class Ball {
  private:
   void handle_window_collision();
   void handle_paddle_collision();
+  void change_angle();
   double distance_squared(int x1, int y1, int x2, int y2);
-  bool check_collision(int ball_x, int ball_y, int ball_radius,
-                       const SDL_Rect& rect);
+  bool check_collision(const SDL_Rect& rect);
   int window_height_, window_width_;
   int centre_x_, centre_y_;
   int radius_;

@@ -73,40 +73,52 @@ double Ball::distance_squared(int x1, int y1, int x2, int y2) {
   return delta_x * delta_x + delta_y * delta_y;
 }
 
-bool Ball::check_collision(int ball_x, int ball_y, int ball_radius,
-                           const SDL_Rect& rect) {
+bool Ball::check_collision(const SDL_Rect& rect) {
   int closest_x, closest_y;
 
   // Find the closest x point
-  if (ball_x < rect.x) {
+  if (centre_x_ < rect.x) {
     closest_x = rect.x;
-  } else if (ball_x > rect.x + rect.w) {
+  } else if (centre_x_ > rect.x + rect.w) {
     closest_x = rect.x + rect.w;
   } else {
-    closest_x = ball_x;
+    closest_x = centre_x_;
   }
 
   // Find the closest y point
-  if (ball_y < rect.y) {
+  if (centre_y_ < rect.y) {
     closest_y = rect.y;
-  } else if (ball_y > rect.y + rect.h) {
+  } else if (centre_y_ > rect.y + rect.h) {
     closest_y = rect.y + rect.h;
   } else {
-    closest_y = ball_y;
+    closest_y = centre_y_;
   }
 
   // If the closest point is inside the circle, return true
-  return distance_squared(ball_x, ball_y, closest_x, closest_y) <
-         ball_radius * ball_radius;
+  return distance_squared(centre_x_, centre_y_, closest_x, closest_y) <
+         radius_ * radius_;
 }
 
 void Ball::handle_paddle_collision() {
-  if (check_collision(centre_x_, centre_y_, radius_, paddle_->get_rect())) {
-    // Handle the collision response (bounce the ball)
-    speed_y_ = -speed_y_;  // Reverse the vertical speed to simulate a bounce
-
-    // Optionally, adjust the ball's position so it doesn't go through the
-    // paddle
-    centre_y_ = paddle_->get_y() - radius_;
+  if (check_collision(paddle_->get_rect())) {
+    change_angle();
   }
+}
+void Ball::change_angle() {
+  int paddle_center_x = paddle_->get_x() + (paddle_->get_width() / 2);
+  int distance_from_center = centre_x_ - paddle_center_x;
+
+  // Calculate a horizontal factor based on how far the ball hit from the
+  // center
+  float max_angle = 75.0f;  // Max angle in degrees
+  float hit_ratio =
+      static_cast<float>(distance_from_center) / (paddle_->get_width() / 2);
+  float angle_radians =
+      (max_angle * hit_ratio) * (M_PI / 180.0f);  // Convert to radians
+
+  // Update speed_x_ and speed_y_ based on the new angle
+  float speed = sqrt((speed_x_ * speed_x_) +
+                     (speed_y_ * speed_y_));  // keep speed constant
+  speed_x_ = speed * sin(angle_radians);
+  speed_y_ = -speed * cos(angle_radians);
 }
