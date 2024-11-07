@@ -1,23 +1,23 @@
 #pragma once
 #include <SDL2/SDL.h>
 
+#include <ball.hpp>
 #include <iostream>
-
+#include <paddle.hpp>
 class Game {
  public:
-  Game() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-      std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
-                << std::endl;
-    }
-  }
-  void start();
+  Game() {}
+  void run();
 
  private:
-  void create_window();
-  void renderer_init();
+  void initialize();
+  void handle_input();
+  void render();
   const int window_width_ = 1000, window_height_ = 800;
-  bool running_ = false;
+  bool running_ = true;
   SDL_Window* window_;
   SDL_Renderer* renderer_;
+  Paddle paddle_;
+  Ball ball_;
+  double delta_time_;
 };
