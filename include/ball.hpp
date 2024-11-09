@@ -3,6 +3,7 @@
 
 #include <brick.hpp>
 #include <paddle.hpp>
+#include <vector>
 class Ball {
  public:
   Ball() {}
@@ -25,12 +26,12 @@ class Ball {
   void handle_paddle_collision();
   void handle_brick_collision();
   void change_angle(const SDL_Rect& rect);
-  double distance_squared(int x1, int y1, int x2, int y2);
   bool check_collision(const SDL_Rect& rect);
+
   int window_height_, window_width_;
   int centre_x_, centre_y_;
   int radius_;
-  double speed_x_ = 1, speed_y_ = -1;
+  double speed_x_ = 0.9, speed_y_ = -0.9;
   Paddle* paddle_;
   Brick* brick_;
   SDL_Renderer* renderer_;

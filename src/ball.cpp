@@ -10,19 +10,16 @@ void Ball::render() {
   int error = (tx - diameter);
 
   while (x >= y) {
+    // render left and right side
     for (int i = centre_y_ - y; i <= centre_y_ + y; i++) {
-      SDL_RenderDrawPoint(renderer_, centre_x_ + x,
-                          i);  // Right side of the circle
-      SDL_RenderDrawPoint(renderer_, centre_x_ - x,
-                          i);  // Left side of the circle
+      SDL_RenderDrawPoint(renderer_, centre_x_ + x, i);
+      SDL_RenderDrawPoint(renderer_, centre_x_ - x, i);
     }
 
     if (x != y) {
       for (int i = centre_y_ - x; i <= centre_y_ + x; i++) {
-        SDL_RenderDrawPoint(renderer_, centre_x_ + y,
-                            i);  // Right side of the circle
-        SDL_RenderDrawPoint(renderer_, centre_x_ - y,
-                            i);  // Left side of the circle
+        SDL_RenderDrawPoint(renderer_, centre_x_ + y, i);
+        SDL_RenderDrawPoint(renderer_, centre_x_ - y, i);
       }
     }
 
@@ -68,11 +65,6 @@ void Ball::handle_window_collision() {
     speed_y_ = -speed_y_;
   }
 }
-double Ball::distance_squared(int x1, int y1, int x2, int y2) {
-  int delta_x = x2 - x1;
-  int delta_y = y2 - y1;
-  return delta_x * delta_x + delta_y * delta_y;
-}
 
 bool Ball::check_collision(const SDL_Rect& rect) {
   int closest_x, closest_y;
@@ -95,9 +87,11 @@ bool Ball::check_collision(const SDL_Rect& rect) {
     closest_y = centre_y_;
   }
 
+  int distance_x = centre_x_ - closest_x;
+  int distance_y = centre_y_ - closest_y;
+  float distance = sqrt((distance_x * distance_x) + (distance_y * distance_y));
   // If the closest point is inside the circle, return true
-  return distance_squared(centre_x_, centre_y_, closest_x, closest_y) <
-         radius_ * radius_;
+  return distance < radius_;
 }
 
 void Ball::handle_paddle_collision() {
@@ -107,7 +101,7 @@ void Ball::handle_paddle_collision() {
 }
 
 void Ball::handle_brick_collision() {
-  if (check_collision(brick_->get_rect())) {
+  if (brick_->is_alive() && check_collision(brick_->get_rect())) {
     change_angle(brick_->get_rect());
     brick_->damage();
   }
@@ -118,14 +112,12 @@ void Ball::change_angle(const SDL_Rect& rect) {
 
   // Calculate a horizontal factor based on how far the ball hit from the
   // center
-  float max_angle = 75.0f;  // Max angle in degrees
+  float max_angle = 75.0f;
   float hit_ratio = static_cast<float>(distance_from_center) / (rect.w / 2);
-  float angle_radians =
-      (max_angle * hit_ratio) * (M_PI / 180.0f);  // Convert to radians
+  float angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
-  // Update speed_x_ and speed_y_ based on the new angle
-  float speed = sqrt((speed_x_ * speed_x_) +
-                     (speed_y_ * speed_y_));  // keep speed constant
+  // Update based on the new angle
+  float speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
   speed_x_ = speed * sin(angle_radians);
   speed_y_ = -speed * cos(angle_radians);
 }

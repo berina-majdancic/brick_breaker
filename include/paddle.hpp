@@ -11,7 +11,7 @@ class Paddle {
     height_ = 20;
     x_ = (window_width_ - width_) / 2;
     y_ = (window_height_ - height_) - 20;
-    speed_ = 1;
+    speed_ = 2;
     rect_ = {x_, y_, width_, height_};
     renderer_ = renderer;
   }
