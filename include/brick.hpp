@@ -4,7 +4,7 @@ class Brick {
  public:
   Brick() {};
   Brick(SDL_Renderer* renderer) {
-    width_ = 30;
+    width_ = 60;
     height_ = 20;
     x_ = 500 - width_;
     y_ = 20;
@@ -17,9 +17,11 @@ class Brick {
   int get_width() { return width_; }
   int get_height() { return height_; }
   SDL_Rect get_rect() { return rect_; }
+  void damage() { health_--; }
 
  private:
   int x_, y_;
+  int health_ = 1;
   int width_, height_;
   SDL_Renderer* renderer_;
   SDL_Rect rect_;

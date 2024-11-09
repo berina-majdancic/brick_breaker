@@ -1,6 +1,8 @@
 #include <brick.hpp>
 
 void Brick::render() {
-  SDL_SetRenderDrawColor(renderer_, 255, 255, 255, 255);
-  SDL_RenderFillRect(renderer_, &rect_);
+  if (health_ > 0) {
+    SDL_SetRenderDrawColor(renderer_, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer_, &rect_);
+  }
 }

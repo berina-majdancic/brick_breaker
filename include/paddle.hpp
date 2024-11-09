@@ -3,23 +3,31 @@
 enum class Direction { left = -1, right = 1 };
 class Paddle {
  public:
-  Paddle(int window_width, int window_height) {
+  Paddle() {}
+  Paddle(int window_width, int window_height, SDL_Renderer* renderer) {
     window_width_ = window_width;
     window_height_ = window_height;
-    width_ = 100;
+    width_ = 200;
     height_ = 20;
     x_ = (window_width_ - width_) / 2;
     y_ = (window_height_ - height_) - 20;
-    speed_ = 15;
+    speed_ = 1;
     rect_ = {x_, y_, width_, height_};
+    renderer_ = renderer;
   }
-  void render(SDL_Renderer* renderer);
-  void move(Direction direction);
+  void render();
+  void move(Direction direction, double& delta_time);
+  int get_x() { return x_; }
+  int get_y() { return y_; }
+  int get_width() { return width_; }
+  int get_height() { return height_; }
+  SDL_Rect get_rect() { return rect_; }
 
  private:
   int window_width_, window_height_;
   int width_, height_;
   int x_, y_;
-  int speed_;
+  double speed_;
   SDL_Rect rect_;
+  SDL_Renderer* renderer_;
 };
