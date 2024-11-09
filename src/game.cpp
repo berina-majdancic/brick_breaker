@@ -6,6 +6,7 @@ void Game::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
               << std::endl;
+    return;
   }
   window_ = SDL_CreateWindow("My SDL Window", SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width_,
@@ -14,12 +15,15 @@ void Game::initialize() {
     std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError()
               << std::endl;
     SDL_Quit();
+    return;
   }
-  renderer_ = SDL_CreateRenderer(
+  renderer_ = SDL_CreateRenderer(  // add error handling
       window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   paddle_ = Paddle(window_width_, window_height_, renderer_);
-  ball_ = Ball(window_width_, window_height_, &paddle_, renderer_);
+  brick_ = Brick(renderer_);
+  ball_ = Ball(window_width_, window_height_, &paddle_, &brick_, renderer_);
+  running_ = true;
 }
 void Game::run() {
   initialize();
@@ -37,9 +41,9 @@ void Game::run() {
                            (double)SDL_GetPerformanceFrequency());
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
     SDL_RenderClear(renderer_);
-
     paddle_.render();
     ball_.render();
+    brick_.render();
     ball_.move(delta_time_);
     handle_input();
     // Swap the buffers

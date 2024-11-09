@@ -46,6 +46,7 @@ void Ball::move(double& delta_time) {
 
   handle_window_collision();
   handle_paddle_collision();
+  handle_brick_collision();
 }
 
 void Ball::handle_window_collision() {
@@ -101,18 +102,24 @@ bool Ball::check_collision(const SDL_Rect& rect) {
 
 void Ball::handle_paddle_collision() {
   if (check_collision(paddle_->get_rect())) {
-    change_angle();
+    change_angle(paddle_->get_rect());
   }
 }
-void Ball::change_angle() {
-  int paddle_center_x = paddle_->get_x() + (paddle_->get_width() / 2);
-  int distance_from_center = centre_x_ - paddle_center_x;
+
+void Ball::handle_brick_collision() {
+  if (check_collision(brick_->get_rect())) {
+    change_angle(brick_->get_rect());
+    brick_->damage();
+  }
+}
+void Ball::change_angle(const SDL_Rect& rect) {
+  int rect_center_x = rect.x + (rect.w / 2);
+  int distance_from_center = centre_x_ - rect_center_x;
 
   // Calculate a horizontal factor based on how far the ball hit from the
   // center
   float max_angle = 75.0f;  // Max angle in degrees
-  float hit_ratio =
-      static_cast<float>(distance_from_center) / (paddle_->get_width() / 2);
+  float hit_ratio = static_cast<float>(distance_from_center) / (rect.w / 2);
   float angle_radians =
       (max_angle * hit_ratio) * (M_PI / 180.0f);  // Convert to radians
 

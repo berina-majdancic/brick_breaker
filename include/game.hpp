@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include <ball.hpp>
+#include <brick.hpp>
 #include <iostream>
 #include <paddle.hpp>
 class Game {
@@ -19,5 +20,6 @@ class Game {
   SDL_Renderer* renderer_;
   Paddle paddle_;
   Ball ball_;
+  Brick brick_;
   double delta_time_;
 };
