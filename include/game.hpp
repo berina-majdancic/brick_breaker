@@ -3,7 +3,6 @@
 
 #include <ball.hpp>
 #include <brick.hpp>
-#include <iostream>
 #include <paddle.hpp>
 class Game {
  public:
@@ -14,6 +13,8 @@ class Game {
   void initialize();
   void handle_input();
   void render();
+  double calculate_delta_time(Uint64 current_time, Uint64 last_time);
+  void quit();
   const int window_width_ = 1000, window_height_ = 800;
   bool running_ = true;
   SDL_Window* window_;

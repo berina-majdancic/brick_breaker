@@ -17,10 +17,15 @@ class Brick {
   int get_width() { return width_; }
   int get_height() { return height_; }
   SDL_Rect get_rect() { return rect_; }
-  void damage() { health_--; }
+  bool is_alive() { return is_alive_; }
+  void damage() {
+    health_--;
+    if (health_ <= 0) is_alive_ = false;
+  }
 
  private:
   int x_, y_;
+  bool is_alive_ = true;
   int health_ = 1;
   int width_, height_;
   SDL_Renderer* renderer_;

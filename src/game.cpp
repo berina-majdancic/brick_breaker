@@ -1,7 +1,22 @@
-#include <ball.hpp>
 #include <game.hpp>
-#include <paddle.hpp>
+#include <iostream>
+void Game::run() {
+  initialize();
+  Uint64 current_time, last_time = SDL_GetPerformanceCounter();
+  delta_time_ = 0;
 
+  while (running_) {
+    current_time = SDL_GetPerformanceCounter();
+    delta_time_ = calculate_delta_time(current_time, last_time);
+
+    handle_input();
+    render();
+
+    SDL_RenderPresent(renderer_);  // Swap the buffers
+    last_time = current_time;
+  }
+  quit();
+}
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
@@ -25,34 +40,23 @@ void Game::initialize() {
   ball_ = Ball(window_width_, window_height_, &paddle_, &brick_, renderer_);
   running_ = true;
 }
-void Game::run() {
-  initialize();
-  Uint64 current_time, last_time = SDL_GetPerformanceCounter();
-  delta_time_ = 0;
-
-  while (running_) {  // game loop
-    current_time = SDL_GetPerformanceCounter();
-    delta_time_ = (double)((current_time - last_time) * 1000 /
-                           (double)SDL_GetPerformanceFrequency());
-    if (delta_time_ < 16.67) {
-      SDL_Delay(static_cast<Uint32>(16.67 - delta_time_));
-    }
-    delta_time_ = (double)((current_time - last_time) * 1000 /
-                           (double)SDL_GetPerformanceFrequency());
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-    SDL_RenderClear(renderer_);
-    paddle_.render();
-    ball_.render();
-    brick_.render();
-    ball_.move(delta_time_);
-    handle_input();
-    // Swap the buffers
-    SDL_RenderPresent(renderer_);
-    last_time = current_time;
+double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
+  double delta_time = (double)((current_time - last_time) * 1000 /
+                               (double)SDL_GetPerformanceFrequency());
+  if (delta_time < 16.67) {
+    SDL_Delay(static_cast<Uint32>(16.67 - delta_time));
   }
-
-  SDL_DestroyWindow(window_);
-  SDL_Quit();
+  delta_time = (double)((current_time - last_time) * 1000 /
+                        (double)SDL_GetPerformanceFrequency());
+  return delta_time;
+}
+void Game::render() {
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+  SDL_RenderClear(renderer_);
+  brick_.render();
+  paddle_.render();
+  ball_.render();
+  ball_.move(delta_time_);
 }
 void Game::handle_input() {
   SDL_Event event;
@@ -67,4 +71,8 @@ void Game::handle_input() {
   if (keystate[SDL_SCANCODE_RIGHT]) {
     paddle_.move(Direction::right, delta_time_);
   }
+}
+void Game::quit() {
+  SDL_DestroyWindow(window_);
+  SDL_Quit();
 }
