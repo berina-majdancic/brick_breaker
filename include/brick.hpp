@@ -3,11 +3,11 @@
 class Brick {
  public:
   Brick() {};
-  Brick(SDL_Renderer* renderer) {
-    width_ = 60;
+  Brick(SDL_Renderer* renderer, int x, int y) {
+    width_ = 70;
     height_ = 20;
-    x_ = 500 - width_;
-    y_ = 20;
+    x_ = x;
+    y_ = y;
     rect_ = {x_, y_, width_, height_};
     renderer_ = renderer;
   }

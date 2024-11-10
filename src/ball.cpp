@@ -43,7 +43,9 @@ void Ball::move(double& delta_time) {
 
   handle_window_collision();
   handle_paddle_collision();
-  handle_brick_collision();
+  for (int i = 0; i < 10; i++) {
+    handle_brick_collision(&(*brick_array_)[i]);
+  }
 }
 
 void Ball::handle_window_collision() {
@@ -100,10 +102,10 @@ void Ball::handle_paddle_collision() {
   }
 }
 
-void Ball::handle_brick_collision() {
-  if (brick_->is_alive() && check_collision(brick_->get_rect())) {
-    change_angle(brick_->get_rect());
-    brick_->damage();
+void Ball::handle_brick_collision(Brick* brick) {
+  if (brick->is_alive() && check_collision(brick->get_rect())) {
+    change_angle(brick->get_rect());
+    brick->damage();
   }
 }
 void Ball::change_angle(const SDL_Rect& rect) {
