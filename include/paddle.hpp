@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL2/SDL.h>
+#include <SDL.h>
 enum class Direction { left = -1, right = 1 };
 class Paddle {
  public:
