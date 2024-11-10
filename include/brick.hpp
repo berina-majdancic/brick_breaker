@@ -1,15 +1,18 @@
 #pragma once
 #include <SDL.h>
+#define NUM_OF_BRICKS 130
+
 class Brick {
  public:
   Brick() {};
-  Brick(SDL_Renderer* renderer, int x, int y) {
+  Brick(SDL_Renderer* renderer, int x, int y, int health) {
     width_ = 70;
     height_ = 20;
     x_ = x;
     y_ = y;
     rect_ = {x_, y_, width_, height_};
     renderer_ = renderer;
+    health_ = health;
   }
   void render();
   int get_x() { return x_; }

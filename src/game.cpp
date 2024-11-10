@@ -55,7 +55,7 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
 void Game::render() {
   SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
   SDL_RenderClear(renderer_);
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < NUM_OF_BRICKS; i++) {
     brick_[i].render();
   }
   paddle_.render();
@@ -82,9 +82,19 @@ void Game::quit() {
 }
 void Game::initialize_bricks() {
   srand(static_cast<unsigned>(time(0)));
-  for (int i = 0; i < 10; i++) {
-    int random_x = (rand() % (window_width_ - 70));
-    int random_y = (rand() % (window_height_ / 2)) + 5;
-    brick_[i] = Brick(renderer_, random_x, random_y);
+  int x = 5, y = 5;
+  int health = 1;
+  for (int i = 0; i < NUM_OF_BRICKS; i++) {
+    /*int random_x = (rand() % (window_width_ - 70));
+    int random_y = (rand() % (window_height_ / 2)) + 5;*/
+
+    brick_[i] = Brick(renderer_, x, y, health);
+    x += 75;
+
+    if (x + 60 >= window_width_) {
+      x = 5;
+      y += 35;
+    }
+    if (i == NUM_OF_BRICKS - 20) health = 4;
   }
 }

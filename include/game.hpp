@@ -5,6 +5,7 @@
 #include <ball.hpp>
 #include <brick.hpp>
 #include <paddle.hpp>
+
 class Game {
  public:
   Game() {}
@@ -23,6 +24,6 @@ class Game {
   SDL_Renderer* renderer_;
   Paddle paddle_;
   Ball ball_;
-  std::array<Brick, 10> brick_;
+  std::array<Brick, NUM_OF_BRICKS> brick_;
   double delta_time_;
 };

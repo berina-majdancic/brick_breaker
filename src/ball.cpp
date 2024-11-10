@@ -1,4 +1,5 @@
 #include <ball.hpp>
+#include <cmath>
 
 void Ball::render() {
   const int diameter = (radius_ * 2);
@@ -43,7 +44,7 @@ void Ball::move(double& delta_time) {
 
   handle_window_collision();
   handle_paddle_collision();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < NUM_OF_BRICKS; i++) {
     handle_brick_collision(&(*brick_array_)[i]);
   }
 }
@@ -92,23 +93,37 @@ bool Ball::check_collision(const SDL_Rect& rect) {
   int distance_x = centre_x_ - closest_x;
   int distance_y = centre_y_ - closest_y;
   float distance = sqrt((distance_x * distance_x) + (distance_y * distance_y));
+
   // If the closest point is inside the circle, return true
-  return distance < radius_;
+  if (distance < radius_) {
+    // Determine the side hit based on the closest point's position
+    if (closest_x == rect.x) {
+      side_hit_ = Side_hit::LEFT;
+    } else if (closest_x == rect.x + rect.w) {
+      side_hit_ = Side_hit::RIGHT;
+    } else if (closest_y == rect.y) {
+      side_hit_ = Side_hit::TOP;
+    } else {
+      side_hit_ = Side_hit::BOTTOM;
+    }
+    return true;
+  }
+  return false;
 }
 
 void Ball::handle_paddle_collision() {
   if (check_collision(paddle_->get_rect())) {
-    change_angle(paddle_->get_rect());
+    change_angle(paddle_->get_rect(), side_hit_);
   }
 }
 
 void Ball::handle_brick_collision(Brick* brick) {
   if (brick->is_alive() && check_collision(brick->get_rect())) {
-    change_angle(brick->get_rect());
+    change_angle(brick->get_rect(), side_hit_);
     brick->damage();
   }
 }
-void Ball::change_angle(const SDL_Rect& rect) {
+void Ball::change_angle(const SDL_Rect& rect, Side_hit side) {
   int rect_center_x = rect.x + (rect.w / 2);
   int distance_from_center = centre_x_ - rect_center_x;
 
@@ -120,6 +135,26 @@ void Ball::change_angle(const SDL_Rect& rect) {
 
   // Update based on the new angle
   float speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
-  speed_x_ = speed * sin(angle_radians);
-  speed_y_ = -speed * cos(angle_radians);
+
+  switch (side) {
+    case Side_hit::TOP:
+      speed_y_ = -speed * cos(angle_radians);  // Reflect upward
+      speed_x_ = speed * sin(angle_radians);   // Adjust x-angle
+      break;
+
+    case Side_hit::BOTTOM:
+      speed_y_ = speed * cos(angle_radians);  // Reflect downward
+      speed_x_ = speed * sin(angle_radians);  // Adjust x-angle
+      break;
+
+    case Side_hit::LEFT:
+      speed_x_ = -speed * cos(angle_radians);  // Reflect rightward
+      speed_y_ = speed * sin(angle_radians);   // Adjust y-angle
+      break;
+
+    case Side_hit::RIGHT:
+      speed_x_ = speed * cos(angle_radians);  // Reflect leftward
+      speed_y_ = speed * sin(angle_radians);  // Adjust y-angle
+      break;
+  }
 }
