@@ -8,6 +8,6 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
-add_executable(sdl_window ${SOURCES})
+add_executable(brick_breaker ${SOURCES})
 
-target_link_libraries(sdl_window ${SDL2_LIBRARIES})
+target_link_libraries(brick_breaker ${SDL2_LIBRARIES})

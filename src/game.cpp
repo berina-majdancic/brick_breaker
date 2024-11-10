@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <game.hpp>
 #include <iostream>
 void Game::run() {
@@ -36,7 +38,7 @@ void Game::initialize() {
       window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   paddle_ = Paddle(window_width_, window_height_, renderer_);
-  brick_ = Brick(renderer_);
+  initialize_bricks();
   ball_ = Ball(window_width_, window_height_, &paddle_, &brick_, renderer_);
   running_ = true;
 }
@@ -53,7 +55,9 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
 void Game::render() {
   SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
   SDL_RenderClear(renderer_);
-  brick_.render();
+  for (int i = 0; i < 10; i++) {
+    brick_[i].render();
+  }
   paddle_.render();
   ball_.render();
   ball_.move(delta_time_);
@@ -75,4 +79,12 @@ void Game::handle_input() {
 void Game::quit() {
   SDL_DestroyWindow(window_);
   SDL_Quit();
+}
+void Game::initialize_bricks() {
+  srand(static_cast<unsigned>(time(0)));
+  for (int i = 0; i < 10; i++) {
+    int random_x = (rand() % (window_width_ - 70));
+    int random_y = (rand() % (window_height_ / 2)) + 5;
+    brick_[i] = Brick(renderer_, random_x, random_y);
+  }
 }
