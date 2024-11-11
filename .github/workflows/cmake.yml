@@ -3,28 +3,41 @@ name: CMake Build
 on:
   push:
     branches:
-      - main  # Trigger on push to the 'main' branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger on PRs to the 'main' branch
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use a GitHub runner with Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install CMake
-        run: |
-          sudo apt update
-          sudo apt install -y cmake
+      - name: Cache CMake Modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/cmake
+            build
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
 
-      - name: Install SDL2
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libsdl2-dev  # Install SDL2 development package
+          sudo apt install -y cmake \
+                              libsdl2-dev \
+                              libsdl2-ttf-dev \
+                              pkg-config \
+                              clang-format \
+                              g++
+
+      - name: Check Code Formatting
+        run: clang-format -i -style=file src/*.cpp include/*.hpp
 
       - name: Configure CMake
         run: |
@@ -36,3 +49,14 @@ jobs:
         run: |
           cd build
           cmake --build .
+
+      - name: Run Tests
+        run: |
+          cd build
+          ctest --output-on-failure
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: brick-breaker-build
+          path: build/
