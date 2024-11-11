@@ -1,0 +1,135 @@
+# Compiled Object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lib
+*.a
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# Profiling data
+*.gcda
+*.gcno
+*.gcov
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+CMakeScripts/
+Testing/
+CTestTestfile.cmake
+build/
+build*/
+
+# Qt Creator
+*.autosave
+*.pro.user
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+qmake.stash
+*.qrc
+
+# Visual Studio files
+.vscode/
+.vs/
+*.code-workspace
+*.VC.db
+*.VC.opendb
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Xcode files
+*.xcworkspace
+*.xcproj
+*.xcodeproj/
+*.xcuserdata/
+*.xcsettings
+profile
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+
+# CLion
+cmake-build-debug/
+cmake-build-release/
+
+# Microsoft Visual Studio Code
+.vscode/
+
+# Code::Blocks
+*.layout
+*.depend
+*.depend.*
+*.cbp
+*.workspace
+
+# Dev C++
+*.dev
+*.layout
+
+# Eclipse
+.cproject
+.project
+.settings/
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Backup and Temporary files
+*.bak
+*.swp
+*.tmp
+*~
+.#*
+*.orig
+
+# Logs and Databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# Conan dependencies
+conanbuildinfo.txt
+conanbuildinfo.cmake
+conan.lock
+conanbuild/
+conaninfo.txt
+
+# Miscellaneous
+*.ipch
+*.pdb
+*.class
+*.swp
+*.tlog/
+*.lastcodeanalysissucceeded
