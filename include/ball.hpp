@@ -4,7 +4,7 @@
 #include <array>
 #include <brick.hpp>
 #include <paddle.hpp>
-enum class Side_hit { TOP, BOTTOM, LEFT, RIGHT, NONE };
+enum class Side { TOP, BOTTOM, LEFT, RIGHT, NONE };
 class Ball {
  public:
   Ball() {}
@@ -25,14 +25,14 @@ class Ball {
   void handle_window_collision();
   void handle_paddle_collision();
   void handle_brick_collision(Brick* brick);
-  void change_angle(const SDL_Rect& rect, Side_hit side);
-  bool check_collision(const SDL_Rect& rect);
+  void change_angle(const SDL_Rect& rect, Side side);
+  bool detect_collision(const SDL_Rect& rect);
 
   int window_height_, window_width_;
   int centre_x_, centre_y_;
   int radius_ = 8;
-  Side_hit side_hit_;
-  double speed_x_ = 0.9, speed_y_ = -0.9;
+  Side side_hit_;
+  double speed_x_ = 0.5, speed_y_ = -0.5;
   Paddle* paddle_;
   std::array<Brick, NUM_OF_BRICKS>* brick_array_;
   SDL_Renderer* renderer_;
