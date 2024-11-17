@@ -1,4 +1,6 @@
 #include <ball.hpp>
+#include <cmath>
+#include <iostream>
 
 void Ball::render() {
   const int diameter = (radius_ * 2);
@@ -43,13 +45,13 @@ void Ball::move(double& delta_time) {
 
   handle_window_collision();
   handle_paddle_collision();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < NUM_OF_BRICKS; i++) {
     handle_brick_collision(&(*brick_array_)[i]);
   }
 }
 
 void Ball::handle_window_collision() {
-  // Handle X-axis
+  // X
   if (centre_x_ - radius_ < 0) {
     centre_x_ = radius_;
     speed_x_ = -speed_x_;
@@ -58,7 +60,7 @@ void Ball::handle_window_collision() {
     speed_x_ = -speed_x_;
   }
 
-  // Handle Y-axis
+  // Y
   if (centre_y_ - radius_ < 0) {
     centre_y_ = radius_;
     speed_y_ = -speed_y_;
@@ -67,59 +69,96 @@ void Ball::handle_window_collision() {
     speed_y_ = -speed_y_;
   }
 }
+bool Ball::detect_collision(const SDL_Rect& rect) {
+  int ball_left = centre_x_ - radius_;
+  int ball_right = centre_x_ + radius_;
+  int ball_top = centre_y_ - radius_;
+  int ball_bottom = centre_y_ + radius_;
 
-bool Ball::check_collision(const SDL_Rect& rect) {
-  int closest_x, closest_y;
+  int rect_left = rect.x;
+  int rect_right = rect.x + rect.w;
+  int rect_top = rect.y;
+  int rect_bottom = rect.y + rect.h;
 
-  // Find the closest x point
-  if (centre_x_ < rect.x) {
-    closest_x = rect.x;
-  } else if (centre_x_ > rect.x + rect.w) {
-    closest_x = rect.x + rect.w;
-  } else {
-    closest_x = centre_x_;
+  bool is_collision = (ball_right > rect.x && ball_left < rect_right &&
+                       ball_bottom > rect_top && ball_top < rect_bottom);
+
+  if (is_collision) {
+    std::cout << "Collision detected!" << std::endl;
+
+    int overlap_left = ball_right - rect.x;
+    int overlap_right = rect_right - ball_left;
+    int overlap_top = ball_bottom - rect_top;
+    int overlap_bottom = rect_bottom - ball_top;
+
+    int min_overlap = std::min(std::min(overlap_left, overlap_right),
+                               std::min(overlap_top, overlap_bottom));
+
+    if (min_overlap == overlap_left) {
+      side_hit_ = Side::LEFT;
+      if (is_collision) std::cout << "Left" << std::endl;
+
+    } else if (min_overlap == overlap_right) {
+      side_hit_ = Side::RIGHT;
+      if (is_collision) std::cout << "Right" << std::endl;
+
+    } else if (min_overlap == overlap_top) {
+      side_hit_ = Side::TOP;
+      if (is_collision) std::cout << "Top" << std::endl;
+
+    } else if (min_overlap == overlap_bottom) {
+      side_hit_ = Side::BOTTOM;
+      if (is_collision) std::cout << "Bottom" << std::endl;
+    }
   }
 
-  // Find the closest y point
-  if (centre_y_ < rect.y) {
-    closest_y = rect.y;
-  } else if (centre_y_ > rect.y + rect.h) {
-    closest_y = rect.y + rect.h;
-  } else {
-    closest_y = centre_y_;
-  }
-
-  int distance_x = centre_x_ - closest_x;
-  int distance_y = centre_y_ - closest_y;
-  float distance = sqrt((distance_x * distance_x) + (distance_y * distance_y));
-  // If the closest point is inside the circle, return true
-  return distance < radius_;
+  return is_collision;
 }
-
 void Ball::handle_paddle_collision() {
-  if (check_collision(paddle_->get_rect())) {
-    change_angle(paddle_->get_rect());
+  if (detect_collision(paddle_->get_rect())) {
+    change_angle(paddle_->get_rect(), side_hit_);
   }
 }
 
 void Ball::handle_brick_collision(Brick* brick) {
-  if (brick->is_alive() && check_collision(brick->get_rect())) {
-    change_angle(brick->get_rect());
+  if (brick->is_alive() && detect_collision(brick->get_rect())) {
+    change_angle(brick->get_rect(), side_hit_);
     brick->damage();
   }
 }
-void Ball::change_angle(const SDL_Rect& rect) {
+void Ball::change_angle(const SDL_Rect& rect, Side side) {
   int rect_center_x = rect.x + (rect.w / 2);
   int distance_from_center = centre_x_ - rect_center_x;
 
-  // Calculate a horizontal factor based on how far the ball hit from the
-  // center
+  // Calculate a horizontal factor based on how far the ball hit from the center
   float max_angle = 75.0f;
   float hit_ratio = static_cast<float>(distance_from_center) / (rect.w / 2);
   float angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
-  // Update based on the new angle
+  // Update speed based on the new angle
   float speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
-  speed_x_ = speed * sin(angle_radians);
-  speed_y_ = -speed * cos(angle_radians);
+
+  switch (side) {
+    case Side::TOP:
+      speed_y_ = -speed * cos(angle_radians);
+      speed_x_ = speed * sin(angle_radians);
+      break;
+
+    case Side::BOTTOM:
+      speed_y_ = abs(speed * cos(angle_radians));
+      speed_x_ = speed * sin(angle_radians);
+      break;
+
+    case Side::LEFT:
+      speed_x_ = -abs(speed * sin(angle_radians));
+      speed_y_ = (speed_y_ > 0 ? -speed * cos(angle_radians)
+                               : speed * cos(angle_radians));
+      break;
+
+    case Side::RIGHT:
+      speed_x_ = abs(speed * sin(angle_radians));
+      speed_y_ = (speed_y_ > 0 ? -speed * cos(angle_radians)
+                               : speed * cos(angle_radians));
+      break;
+  }
 }
