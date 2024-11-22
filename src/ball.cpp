@@ -4,7 +4,6 @@
 
 void Ball::render() {
   const int diameter = (radius_ * 2);
-
   int x = (radius_ - 1);
   int y = 0;
   int tx = 1;
@@ -12,7 +11,6 @@ void Ball::render() {
   int error = (tx - diameter);
 
   while (x >= y) {
-    // render left and right side
     for (int i = centre_y_ - y; i <= centre_y_ + y; i++) {
       SDL_RenderDrawPoint(renderer_, centre_x_ + x, i);
       SDL_RenderDrawPoint(renderer_, centre_x_ - x, i);
@@ -80,13 +78,13 @@ bool Ball::detect_collision(const SDL_Rect& rect) {
   int rect_top = rect.y;
   int rect_bottom = rect.y + rect.h;
 
-  bool is_collision = (ball_right > rect.x && ball_left < rect_right &&
+  bool is_collision = (ball_right > rect_left && ball_left < rect_right &&
                        ball_bottom > rect_top && ball_top < rect_bottom);
 
   if (is_collision) {
     std::cout << "Collision detected!" << std::endl;
 
-    int overlap_left = ball_right - rect.x;
+    int overlap_left = ball_right - rect_left;
     int overlap_right = rect_right - ball_left;
     int overlap_top = ball_bottom - rect_top;
     int overlap_bottom = rect_bottom - ball_top;
@@ -96,22 +94,21 @@ bool Ball::detect_collision(const SDL_Rect& rect) {
 
     if (min_overlap == overlap_left) {
       side_hit_ = Side::LEFT;
-      if (is_collision) std::cout << "Left" << std::endl;
+      std::cout << "Left" << std::endl;
 
     } else if (min_overlap == overlap_right) {
       side_hit_ = Side::RIGHT;
-      if (is_collision) std::cout << "Right" << std::endl;
+      std::cout << "Right" << std::endl;
 
     } else if (min_overlap == overlap_top) {
       side_hit_ = Side::TOP;
-      if (is_collision) std::cout << "Top" << std::endl;
+      std::cout << "Top" << std::endl;
 
     } else if (min_overlap == overlap_bottom) {
       side_hit_ = Side::BOTTOM;
-      if (is_collision) std::cout << "Bottom" << std::endl;
+      std::cout << "Bottom" << std::endl;
     }
   }
-
   return is_collision;
 }
 void Ball::handle_paddle_collision() {
@@ -130,35 +127,31 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
   int rect_center_x = rect.x + (rect.w / 2);
   int distance_from_center = centre_x_ - rect_center_x;
 
-  // Calculate a horizontal factor based on how far the ball hit from the center
-  float max_angle = 75.0f;
-  float hit_ratio = static_cast<float>(distance_from_center) / (rect.w / 2);
-  float angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
+  double max_angle = 75.0f;
+  double hit_ratio = static_cast<double>(distance_from_center) / (rect.w / 2);
+  double angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
-  // Update speed based on the new angle
-  float speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
+  double speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
 
   switch (side) {
     case Side::TOP:
-      speed_y_ = -speed * cos(angle_radians);
-      speed_x_ = speed * sin(angle_radians);
+      speed_y_ = -abs(speed * sin(angle_radians));
+      speed_x_ = speed_x_ > 0 ? speed * cos(angle_radians)
+                              : -speed * cos(angle_radians);
       break;
 
     case Side::BOTTOM:
-      speed_y_ = abs(speed * cos(angle_radians));
-      speed_x_ = speed * sin(angle_radians);
+      speed_y_ = abs(speed * sin(angle_radians));
+      speed_x_ = speed_x_ > 0 ? speed * cos(angle_radians)
+                              : -speed * cos(angle_radians);
       break;
 
     case Side::LEFT:
-      speed_x_ = -abs(speed * sin(angle_radians));
-      speed_y_ = (speed_y_ > 0 ? -speed * cos(angle_radians)
-                               : speed * cos(angle_radians));
+      speed_x_ = -abs(speed_x_);
       break;
 
     case Side::RIGHT:
-      speed_x_ = abs(speed * sin(angle_radians));
-      speed_y_ = (speed_y_ > 0 ? -speed * cos(angle_radians)
-                               : speed * cos(angle_radians));
+      speed_x_ = abs(speed_x_);
       break;
   }
 }
