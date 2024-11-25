@@ -80,7 +80,7 @@ void Game::initialize() {
     std::cerr << "TTF_Init:" << TTF_GetError() << std::endl;
     return;
   }
-  font_ = TTF_OpenFont("../external/parkisans_font.ttf", 20);
+  font_ = TTF_OpenFont("../assets/fonts/parkisans_font.ttf", 20);
   if (!font_) {
     std::cerr << "TTF_OpenFont: " << TTF_GetError() << std::endl;
     return;
