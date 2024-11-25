@@ -19,6 +19,8 @@ class Game {
   void initialize_bricks();
   double calculate_delta_time(Uint64 current_time, Uint64 last_time);
   void quit();
+  void load_bckground();
+  void render_score();
   const int window_width_ = 1000, window_height_ = 800;
   bool running_ = true;
   int score;
@@ -29,5 +31,6 @@ class Game {
   std::array<Brick, NUM_OF_BRICKS> brick_;
   double delta_time_;
   TTF_Font* font_;
-  SDL_Texture* texture;
+  SDL_Texture* texture_;
+  SDL_Texture* background_texture_;
 };
