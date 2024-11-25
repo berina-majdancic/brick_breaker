@@ -1,14 +1,16 @@
 
+#include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include <cstdlib>
 #include <game.hpp>
 #include <iostream>
 #include <string>
+
 void Game::run() {
   initialize();
   Uint64 current_time, last_time = SDL_GetPerformanceCounter();
   delta_time_ = 0;
+  load_bckground();
 
   while (running_) {
     current_time = SDL_GetPerformanceCounter();
@@ -22,6 +24,23 @@ void Game::run() {
   }
   quit();
 }
+
+void Game::render() {
+  SDL_RenderClear(renderer_);
+
+  SDL_RenderCopy(renderer_, background_texture_, NULL, NULL);
+
+  render_score();
+
+  for (int i = 0; i < NUM_OF_BRICKS; i++) {
+    brick_[i].render();
+  }
+
+  paddle_.render();
+  ball_.render();
+  ball_.move(delta_time_);
+}
+
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
@@ -29,6 +48,12 @@ void Game::initialize() {
     return;
   }
 
+  if (!(IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG)) {
+    std::cerr << "Failed to initialize SDL_image: " << IMG_GetError()
+              << std::endl;
+    SDL_Quit();
+    return;
+  }
   window_ = SDL_CreateWindow("My SDL Window", SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width_,
                              window_height_, SDL_WINDOW_SHOWN);
@@ -36,6 +61,7 @@ void Game::initialize() {
     std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError()
               << std::endl;
     SDL_Quit();
+    IMG_Quit();
     return;
   }
 
@@ -45,6 +71,7 @@ void Game::initialize() {
     std::cerr << "Renderer could not be created!" << SDL_GetError()
               << std::endl;
     SDL_DestroyWindow(window_);
+    IMG_Quit();
     SDL_Quit();
     return;
   }
@@ -74,30 +101,33 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
                         (double)SDL_GetPerformanceFrequency());
   return delta_time;
 }
-
-void Game::render() {
-  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-  SDL_RenderClear(renderer_);
-
-  SDL_Color white = {255, 255, 255, 255};
+void Game::load_bckground() {
+  SDL_Surface* surface_img = IMG_Load("../assets/images/peakpx.jpg");
+  if (!surface_img) {
+    std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
+    return;
+  }
+  background_texture_ = SDL_CreateTextureFromSurface(renderer_, surface_img);
+  SDL_FreeSurface(surface_img);
+  if (!background_texture_) {
+    std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
+    return;
+  }
+}
+void Game::render_score() {
   std::string a = "Score: " + std::to_string(ball_.get_score());
-  SDL_Surface* surface = TTF_RenderText_Solid(font_, a.c_str(), white);
+  SDL_Surface* surface =
+      TTF_RenderText_Solid(font_, a.c_str(), {255, 255, 255, 255});
   int text_width, text_height;
   if (TTF_SizeText(font_, a.c_str(), &text_width, &text_height) != 0) {
     std::cerr << "TTF_SizeText Error: " << TTF_GetError() << std::endl;
   }
   SDL_Rect text_rect = {10, window_height_ - 30, text_width, text_height};
-  texture = SDL_CreateTextureFromSurface(renderer_, surface);
+  texture_ = SDL_CreateTextureFromSurface(renderer_, surface);
   SDL_FreeSurface(surface);
-  SDL_RenderCopy(renderer_, texture, NULL, &text_rect);
-
-  for (int i = 0; i < NUM_OF_BRICKS; i++) {
-    brick_[i].render();
-  }
-  paddle_.render();
-  ball_.render();
-  ball_.move(delta_time_);
+  SDL_RenderCopy(renderer_, texture_, NULL, &text_rect);
 }
+
 void Game::handle_input() {
   SDL_Event event;
 
@@ -115,6 +145,7 @@ void Game::handle_input() {
 void Game::quit() {
   SDL_DestroyWindow(window_);
   TTF_CloseFont(font_);
+  IMG_Quit();
   TTF_Quit();
   SDL_Quit();
 }
@@ -123,9 +154,6 @@ void Game::initialize_bricks() {
   int x = 5, y = 5;
   int health = 1;
   for (int i = 0; i < NUM_OF_BRICKS; i++) {
-    /*int random_x = (rand() % (window_width_ - 70));
-    int random_y = (rand() % (window_height_ / 2)) + 5;*/
-
     brick_[i] = Brick(renderer_, x, y, health);
     x += 75;
 
