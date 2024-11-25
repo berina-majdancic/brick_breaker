@@ -21,7 +21,8 @@ jobs:
           sudo apt update
           sudo apt install -y cmake
 
-      - name: Iname: Install SDL2 and SDL2_ttf
+      - name: Install SDL2 and SDL2_ttf
+        run: |
         sudo apt-get install -y libsdl2-ttf-dev libfreetype6 libfreetype6-dev zlib1g zlib1g-dev
 
       - name: Configure CMake
