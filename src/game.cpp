@@ -1,7 +1,10 @@
+
+#include <SDL_ttf.h>
+
 #include <cstdlib>
-#include <ctime>
 #include <game.hpp>
 #include <iostream>
+#include <string>
 void Game::run() {
   initialize();
   Uint64 current_time, last_time = SDL_GetPerformanceCounter();
@@ -14,7 +17,7 @@ void Game::run() {
     handle_input();
     render();
 
-    SDL_RenderPresent(renderer_);  // Swap the buffers
+    SDL_RenderPresent(renderer_);
     last_time = current_time;
   }
   quit();
@@ -25,6 +28,7 @@ void Game::initialize() {
               << std::endl;
     return;
   }
+
   window_ = SDL_CreateWindow("My SDL Window", SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width_,
                              window_height_, SDL_WINDOW_SHOWN);
@@ -34,8 +38,26 @@ void Game::initialize() {
     SDL_Quit();
     return;
   }
+
   renderer_ = SDL_CreateRenderer(  // add error handling
       window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (renderer_ == NULL) {
+    std::cerr << "Renderer could not be created!" << SDL_GetError()
+              << std::endl;
+    SDL_DestroyWindow(window_);
+    SDL_Quit();
+    return;
+  }
+
+  if (TTF_Init() == -1) {
+    std::cerr << "TTF_Init:" << TTF_GetError() << std::endl;
+    return;
+  }
+  font_ = TTF_OpenFont("../external/parkisans_font.ttf", 20);
+  if (!font_) {
+    std::cerr << "TTF_OpenFont: " << TTF_GetError() << std::endl;
+    return;
+  }
 
   paddle_ = Paddle(window_width_, window_height_, renderer_);
   initialize_bricks();
@@ -52,9 +74,23 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
                         (double)SDL_GetPerformanceFrequency());
   return delta_time;
 }
+
 void Game::render() {
   SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
   SDL_RenderClear(renderer_);
+
+  SDL_Color white = {255, 255, 255, 255};
+  std::string a = "Score: " + std::to_string(ball_.get_score());
+  SDL_Surface* surface = TTF_RenderText_Solid(font_, a.c_str(), white);
+  int text_width, text_height;
+  if (TTF_SizeText(font_, a.c_str(), &text_width, &text_height) != 0) {
+    std::cerr << "TTF_SizeText Error: " << TTF_GetError() << std::endl;
+  }
+  SDL_Rect text_rect = {10, window_height_ - 30, text_width, text_height};
+  texture = SDL_CreateTextureFromSurface(renderer_, surface);
+  SDL_FreeSurface(surface);
+  SDL_RenderCopy(renderer_, texture, NULL, &text_rect);
+
   for (int i = 0; i < NUM_OF_BRICKS; i++) {
     brick_[i].render();
   }
@@ -78,6 +114,8 @@ void Game::handle_input() {
 }
 void Game::quit() {
   SDL_DestroyWindow(window_);
+  TTF_CloseFont(font_);
+  TTF_Quit();
   SDL_Quit();
 }
 void Game::initialize_bricks() {

@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include <array>
 #include <ball.hpp>
@@ -20,10 +21,13 @@ class Game {
   void quit();
   const int window_width_ = 1000, window_height_ = 800;
   bool running_ = true;
+  int score;
   SDL_Window* window_;
   SDL_Renderer* renderer_;
   Paddle paddle_;
   Ball ball_;
   std::array<Brick, NUM_OF_BRICKS> brick_;
   double delta_time_;
+  TTF_Font* font_;
+  SDL_Texture* texture;
 };
