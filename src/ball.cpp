@@ -121,6 +121,7 @@ void Ball::handle_brick_collision(Brick* brick) {
   if (brick->is_alive() && detect_collision(brick->get_rect())) {
     change_angle(brick->get_rect(), side_hit_);
     brick->damage();
+    if (!brick->is_alive()) score_ += 10;
   }
 }
 void Ball::change_angle(const SDL_Rect& rect, Side side) {

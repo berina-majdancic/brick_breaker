@@ -20,6 +20,7 @@ class Ball {
   }
   void render();
   void move(double& delta_time);
+  int get_score() { return score_; }
 
  private:
   void handle_window_collision();
@@ -35,5 +36,6 @@ class Ball {
   double speed_x_ = 0.5, speed_y_ = -0.5;
   Paddle* paddle_;
   std::array<Brick, NUM_OF_BRICKS>* brick_array_;
+  unsigned int score_ = 0;
   SDL_Renderer* renderer_;
 };
