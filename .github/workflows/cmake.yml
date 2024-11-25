@@ -23,8 +23,11 @@ jobs:
 
       - name: Install SDL2
         run: |
-          sudo apt update
-          sudo apt install -y libsdl2-dev  # Install SDL2 development package
+          sudo apt install -y libsdl2-dev
+
+      - name: Install SDL2_ttf
+        run: |
+          sudo apt install libsdl2-ttf-dev
 
       - name: Configure CMake
         run: |
