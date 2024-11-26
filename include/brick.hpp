@@ -13,6 +13,7 @@ class Brick {
     rect_ = {x_, y_, width_, height_};
     renderer_ = renderer;
     health_ = health;
+    load_texture();
   }
   void render();
   int get_x() { return x_; }
@@ -25,6 +26,7 @@ class Brick {
     health_--;
     if (health_ <= 0) is_alive_ = false;
   }
+  void load_texture();
 
  private:
   int x_, y_;
@@ -33,4 +35,5 @@ class Brick {
   int width_, height_;
   SDL_Renderer* renderer_;
   SDL_Rect rect_;
+  SDL_Texture* texture_;
 };
