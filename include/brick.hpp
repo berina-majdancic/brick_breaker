@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#define NUM_OF_BRICKS 130
+#define NUM_OF_BRICKS 125
 
 class Brick {
  public:

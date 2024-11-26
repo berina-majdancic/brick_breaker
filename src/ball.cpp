@@ -68,18 +68,22 @@ void Ball::handle_window_collision() {
   if (centre_x_ - radius_ < 0) {
     centre_x_ = radius_;
     speed_x_ = -speed_x_;
+    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   } else if (centre_x_ + radius_ > window_width_) {
     centre_x_ = window_width_ - radius_;
     speed_x_ = -speed_x_;
+    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   }
 
   // Y
   if (centre_y_ - radius_ < 0) {
     centre_y_ = radius_;
     speed_y_ = -speed_y_;
+    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   } else if (centre_y_ + radius_ > window_height_) {
     centre_y_ = window_height_ - radius_;
     speed_y_ = -speed_y_;
+    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   }
 }
 bool Ball::detect_collision(const SDL_Rect& rect) {
@@ -144,16 +148,16 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
   int distance_from_center = centre_x_ - rect_center_x;
 
   double max_angle = 75.0f;
-  double hit_ratio = static_cast<double>(distance_from_center) / (rect.w / 2);
+  double hit_ratio = static_cast<double>(distance_from_center) / (static_cast<double>(rect.w) / 2);
   double angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
   double speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
 
   switch (side) {
     case Side::TOP:
-      speed_y_ = -abs(speed * sin(angle_radians));
-      speed_x_ = speed_x_ > 0 ? speed * cos(angle_radians)
-                              : -speed * cos(angle_radians);
+      speed_y_ = -abs(speed * cos(angle_radians));
+      speed_x_ = speed_x_ > 0 ? speed * sin(angle_radians)
+                              : -speed * sin(angle_radians);
       break;
 
     case Side::BOTTOM:
