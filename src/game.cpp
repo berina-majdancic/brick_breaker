@@ -80,7 +80,7 @@ void Game::initialize() {
     std::cerr << "TTF_Init:" << TTF_GetError() << std::endl;
     return;
   }
-  font_ = TTF_OpenFont("assets/fonts/parkisans_font.ttf", 20);
+  font_ = TTF_OpenFont("assets/fonts/silkscreen.ttf", 20);
   if (!font_) {
     std::cerr << "TTF_OpenFont: " << TTF_GetError() << std::endl;
     return;
@@ -102,7 +102,7 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
   return delta_time;
 }
 void Game::load_bckground() {
-  SDL_Surface* surface_img = IMG_Load("assets/images/peakpx.jpg");
+  SDL_Surface* surface_img = IMG_Load("assets/images/background.jpg");
   if (!surface_img) {
     std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
     return;
@@ -132,13 +132,13 @@ void Game::handle_input() {
   SDL_Event event;
 
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT) running_ = false;
+    if (event.type == SDL_QUIT || event.key.keysym.scancode== SDL_SCANCODE_ESCAPE) running_ = false;
   }
   const Uint8* keystate = SDL_GetKeyboardState(nullptr);
-  if (keystate[SDL_SCANCODE_LEFT]) {
+  if (keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A]) {
     paddle_.move(Direction::left, delta_time_);
   }
-  if (keystate[SDL_SCANCODE_RIGHT]) {
+  if (keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D]) {
     paddle_.move(Direction::right, delta_time_);
   }
 }
@@ -153,14 +153,42 @@ void Game::initialize_bricks() {
   srand(static_cast<unsigned>(time(0)));
   int x = 10, y = 10;
   int health = 1;
+  int brick_width = 100;
+  /*
   for (int i = 0; i < NUM_OF_BRICKS; i++) {
     brick_[i] = Brick(renderer_, x, y, health);
     x += brick_[i].get_width()+10;
-
+    `
     if (x + 90 >= window_width_) {
       x = 10;
       y += brick_[i].get_height()+5;
     }
     if (i == NUM_OF_BRICKS - 20) health = 1;
   }
+  */
+  int row = 0;
+  for (int i = 0; i < NUM_OF_BRICKS; i++)
+  {
+      brick_[i] = Brick(renderer_, x, y, health);
+      x += brick_[i].get_width() + 10;
+
+      if (x + brick_[i].get_width() - (10*row+1) >= window_width_ - (float(brick_[i].get_width()) / 1.5 * row) ) {
+          x = (float(brick_[i].get_width())/1.5 * (row+1)) - (10 * row + 1);
+          y += brick_[i].get_height() + 5;
+          row++;
+      }
+  }
+  /*
+  int n = 10, m=window_width_-10, num=0;
+  for (int i = 10; i < window_width_/2; i+= brick_[0].get_height() + 5) {
+
+      for (int j = n; j < m; j+=brick_width + 10)
+      {
+          brick_[num] = Brick(renderer_, i, j, health);
+          num++;
+          std::cout << "Render brick " << num << std::endl;
+      }
+      n+= brick_[0].get_width() + 10; 
+      m-= (brick_[0].get_width() + 10);
+  }*/
 }
