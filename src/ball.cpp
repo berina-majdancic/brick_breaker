@@ -1,8 +1,15 @@
 #include <ball.hpp>
 #include <cmath>
 #include <iostream>
+#include <SDL_image.h>
 
 void Ball::render() {
+    rect_.x = centre_x_ - radius_;  
+    rect_.y = centre_y_ - radius_;  
+    rect_.w = radius_*2;
+    rect_.h = radius_ * 2;
+    SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
+    /*
   const int diameter = (radius_ * 2);
   int x = (radius_ - 1);
   int y = 0;
@@ -34,9 +41,17 @@ void Ball::render() {
       tx += 2;
       error += (tx - diameter);
     }
-  }
+  }*/
 }
 
+void Ball::load_texture() {
+    SDL_Surface* tempSurface = IMG_Load("assets/images/ball.png");
+    if (!tempSurface) {
+    }
+    texture_ = SDL_CreateTextureFromSurface(renderer_, tempSurface);
+
+    SDL_FreeSurface(tempSurface);
+}
 void Ball::move(double& delta_time) {
   centre_x_ += static_cast<int>(speed_x_ * delta_time);
   centre_y_ += static_cast<int>(speed_y_ * delta_time);

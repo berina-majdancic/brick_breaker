@@ -54,9 +54,9 @@ void Game::initialize() {
     SDL_Quit();
     return;
   }
-  window_ = SDL_CreateWindow("My SDL Window", SDL_WINDOWPOS_CENTERED,
+  window_ = SDL_CreateWindow("Brick Breaker", SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width_,
-                             window_height_, SDL_WINDOW_SHOWN);
+                             window_height_, SDL_WINDOW_FULLSCREEN);
   if (window_ == nullptr) {
     std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError()
               << std::endl;
@@ -80,7 +80,7 @@ void Game::initialize() {
     std::cerr << "TTF_Init:" << TTF_GetError() << std::endl;
     return;
   }
-  font_ = TTF_OpenFont("../assets/fonts/parkisans_font.ttf", 20);
+  font_ = TTF_OpenFont("assets/fonts/parkisans_font.ttf", 20);
   if (!font_) {
     std::cerr << "TTF_OpenFont: " << TTF_GetError() << std::endl;
     return;
@@ -102,7 +102,7 @@ double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
   return delta_time;
 }
 void Game::load_bckground() {
-  SDL_Surface* surface_img = IMG_Load("../assets/images/peakpx.jpg");
+  SDL_Surface* surface_img = IMG_Load("assets/images/peakpx.jpg");
   if (!surface_img) {
     std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
     return;
@@ -151,16 +151,16 @@ void Game::quit() {
 }
 void Game::initialize_bricks() {
   srand(static_cast<unsigned>(time(0)));
-  int x = 5, y = 5;
+  int x = 10, y = 10;
   int health = 1;
   for (int i = 0; i < NUM_OF_BRICKS; i++) {
     brick_[i] = Brick(renderer_, x, y, health);
-    x += 75;
+    x += brick_[i].get_width()+10;
 
-    if (x + 60 >= window_width_) {
-      x = 5;
-      y += 35;
+    if (x + 90 >= window_width_) {
+      x = 10;
+      y += brick_[i].get_height()+5;
     }
-    if (i == NUM_OF_BRICKS - 20) health = 4;
+    if (i == NUM_OF_BRICKS - 20) health = 1;
   }
 }

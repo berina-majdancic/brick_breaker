@@ -6,8 +6,8 @@ class Brick {
  public:
   Brick() {};
   Brick(SDL_Renderer* renderer, int x, int y, int health) {
-    width_ = 70;
-    height_ = 20;
+    width_ = 100;
+    height_ = 40;
     x_ = x;
     y_ = y;
     rect_ = {x_, y_, width_, height_};

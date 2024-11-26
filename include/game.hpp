@@ -9,7 +9,6 @@
 
 class Game {
  public:
-  Game() {}
   void run();
 
  private:
@@ -21,7 +20,7 @@ class Game {
   void quit();
   void load_bckground();
   void render_score();
-  const int window_width_ = 1000, window_height_ = 800;
+  const int window_width_ = 1920, window_height_ = 1080;
   bool running_ = true;
   int score;
   SDL_Window* window_;

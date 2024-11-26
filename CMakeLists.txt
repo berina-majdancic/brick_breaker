@@ -8,7 +8,7 @@ file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(brick_breaker ${SOURCES})
 if (WIN32)
-    target_link_libraries(brick_breaker PRIVATE ${EXTERNAL_LIB_DIR}/SDL2.lib)
+    target_link_libraries(brick_breaker PRIVATE ${EXTERNAL_LIB_DIR}/SDL2.lib ${EXTERNAL_LIB_DIR}/SDL2_ttf.lib ${EXTERNAL_LIB_DIR}/SDL2_image.lib)
 elseif (UNIX)
     find_package(SDL2 REQUIRED)
     find_package(SDL2_ttf REQUIRED)

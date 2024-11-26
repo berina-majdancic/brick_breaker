@@ -8,7 +8,11 @@ Features
     Ball Mechanics: The ball bounces off walls, the paddle, and bricks.
     Score Tracking: Keep track of the player's score.
 
-Prerequisites
 
+For Windows - SDL and other libs are already included in the project
     C++ Compiler: Make sure you have a compiler that supports C++11 or higher.
+
+For Unix
     SDL2: Install SDL2 development libraries.
+    SDL2_ttf
+    SDL2_image
