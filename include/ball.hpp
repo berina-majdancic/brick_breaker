@@ -17,6 +17,7 @@ class Ball {
     paddle_ = paddle;
     brick_array_ = brick_array;
     renderer_ = renderer;
+    load_texture();
   }
   void render();
   void move(double& delta_time);
@@ -28,14 +29,16 @@ class Ball {
   void handle_brick_collision(Brick* brick);
   void change_angle(const SDL_Rect& rect, Side side);
   bool detect_collision(const SDL_Rect& rect);
-
+  void load_texture();
   int window_height_, window_width_;
   int centre_x_, centre_y_;
-  int radius_ = 8;
+  int radius_ = 14;
   Side side_hit_;
   double speed_x_ = 0.5, speed_y_ = -0.5;
   Paddle* paddle_;
   std::array<Brick, NUM_OF_BRICKS>* brick_array_;
   unsigned int score_ = 0;
   SDL_Renderer* renderer_;
+  SDL_Texture* texture_;
+  SDL_Rect rect_;
 };

@@ -7,9 +7,10 @@ void Brick::render() {
   }
 }
 void Brick::load_texture() {
-  SDL_Surface* tempSurface = IMG_Load("../assets/images/brick.png");
+  SDL_Surface* tempSurface = IMG_Load("assets/images/brick1.png");
   if (!tempSurface) {
   }
   texture_ = SDL_CreateTextureFromSurface(renderer_, tempSurface);
+
   SDL_FreeSurface(tempSurface);
 }
