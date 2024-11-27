@@ -2,7 +2,7 @@
 
 #include <brick.hpp>
 void Brick::render() {
-  if (health_ > 0) {
+  if (is_alive_) {
     SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
   }
 }
@@ -13,4 +13,8 @@ void Brick::load_texture() {
   texture_ = SDL_CreateTextureFromSurface(renderer_, tempSurface);
 
   SDL_FreeSurface(tempSurface);
+}
+void Brick::reset() {
+  health_ = initial_health_;
+  is_alive_ = true;
 }

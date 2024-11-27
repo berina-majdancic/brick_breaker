@@ -4,7 +4,7 @@
 
 class Brick {
  public:
-  Brick() {};
+  Brick(){};
   Brick(SDL_Renderer* renderer, int x, int y, int health) {
     width_ = 100;
     height_ = 40;
@@ -13,6 +13,7 @@ class Brick {
     rect_ = {x_, y_, width_, height_};
     renderer_ = renderer;
     health_ = health;
+    initial_health_ = health;
     load_texture();
   }
   void render();
@@ -26,14 +27,16 @@ class Brick {
     health_--;
     if (health_ <= 0) is_alive_ = false;
   }
+  void reset();
   void load_texture();
 
  private:
   int x_, y_;
   bool is_alive_ = true;
-  int health_ = 1;
+  int health_;
   int width_, height_;
   SDL_Renderer* renderer_;
   SDL_Rect rect_;
   SDL_Texture* texture_;
+  int initial_health_;
 };

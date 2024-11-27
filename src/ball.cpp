@@ -1,24 +1,24 @@
+#include <SDL_image.h>
+
 #include <ball.hpp>
 #include <cmath>
 #include <iostream>
-#include <SDL_image.h>
 
 void Ball::render() {
-    rect_.x = centre_x_ - radius_;  
-    rect_.y = centre_y_ - radius_;  
-    rect_.w = radius_*2;
-    rect_.h = radius_ * 2;
-    SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
-   
+  rect_.x = centre_x_ - radius_;
+  rect_.y = centre_y_ - radius_;
+  rect_.w = radius_ * 2;
+  rect_.h = radius_ * 2;
+  SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
 }
 
 void Ball::load_texture() {
-    SDL_Surface* tempSurface = IMG_Load("assets/images/ball.png");
-    if (!tempSurface) {
-    }
-    texture_ = SDL_CreateTextureFromSurface(renderer_, tempSurface);
+  SDL_Surface* tempSurface = IMG_Load("assets/images/ball.png");
+  if (!tempSurface) {
+  }
+  texture_ = SDL_CreateTextureFromSurface(renderer_, tempSurface);
 
-    SDL_FreeSurface(tempSurface);
+  SDL_FreeSurface(tempSurface);
 }
 void Ball::move(double& delta_time) {
   centre_x_ += static_cast<int>(speed_x_ * delta_time);
@@ -37,22 +37,28 @@ void Ball::handle_window_collision() {
   if (centre_x_ - radius_ < 0) {
     centre_x_ = radius_;
     speed_x_ = -speed_x_;
-    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.3 > speed_x_ < -0.3)
+      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   } else if (centre_x_ + radius_ > window_width_) {
     centre_x_ = window_width_ - radius_;
     speed_x_ = -speed_x_;
-    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.3 > speed_x_ < -0.3)
+      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   }
 
   // Y
   if (centre_y_ - radius_ < 0) {
     centre_y_ = radius_;
     speed_y_ = -speed_y_;
-    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.3 > speed_x_ < -0.3)
+      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   } else if (centre_y_ + radius_ > window_height_) {
+    hit_bottom_ = true;
+    // game end
     centre_y_ = window_height_ - radius_;
     speed_y_ = -speed_y_;
-    if (0.3 > speed_x_ < -0.3) speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.3 > speed_x_ < -0.3)
+      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
   }
 }
 bool Ball::detect_collision(const SDL_Rect& rect) {
@@ -70,7 +76,6 @@ bool Ball::detect_collision(const SDL_Rect& rect) {
                        ball_bottom > rect_top && ball_top < rect_bottom);
 
   if (is_collision) {
-
     int overlap_left = ball_right - rect_left;
     int overlap_right = rect_right - ball_left;
     int overlap_top = ball_bottom - rect_top;
@@ -109,7 +114,8 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
   int distance_from_center = centre_x_ - rect_center_x;
 
   double max_angle = 75.0f;
-  double hit_ratio = static_cast<double>(distance_from_center) / (static_cast<double>(rect.w) / 2);
+  double hit_ratio = static_cast<double>(distance_from_center) /
+                     (static_cast<double>(rect.w) / 2);
   double angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
   double speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
@@ -135,4 +141,12 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
       speed_x_ = abs(speed_x_);
       break;
   }
+}
+void Ball::reset() {
+  centre_x_ = window_width_ / 2;
+  centre_y_ = window_height_ - 150;
+  hit_bottom_ = false;
+  score_ = 0;
+  speed_x_ = 0;
+  speed_y_ = 0.7;
 }
