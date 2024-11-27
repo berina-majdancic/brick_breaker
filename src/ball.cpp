@@ -9,39 +9,7 @@ void Ball::render() {
     rect_.w = radius_*2;
     rect_.h = radius_ * 2;
     SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
-    /*
-  const int diameter = (radius_ * 2);
-  int x = (radius_ - 1);
-  int y = 0;
-  int tx = 1;
-  int ty = 1;
-  int error = (tx - diameter);
-
-  while (x >= y) {
-    for (int i = centre_y_ - y; i <= centre_y_ + y; i++) {
-      SDL_RenderDrawPoint(renderer_, centre_x_ + x, i);
-      SDL_RenderDrawPoint(renderer_, centre_x_ - x, i);
-    }
-
-    if (x != y) {
-      for (int i = centre_y_ - x; i <= centre_y_ + x; i++) {
-        SDL_RenderDrawPoint(renderer_, centre_x_ + y, i);
-        SDL_RenderDrawPoint(renderer_, centre_x_ - y, i);
-      }
-    }
-
-    if (error <= 0) {
-      ++y;
-      error += ty;
-      ty += 2;
-    }
-
-    if (error > 0) {
-      --x;
-      tx += 2;
-      error += (tx - diameter);
-    }
-  }*/
+   
 }
 
 void Ball::load_texture() {
@@ -58,6 +26,7 @@ void Ball::move(double& delta_time) {
 
   handle_window_collision();
   handle_paddle_collision();
+
   for (int i = 0; i < NUM_OF_BRICKS; i++) {
     handle_brick_collision(&(*brick_array_)[i]);
   }
@@ -101,7 +70,6 @@ bool Ball::detect_collision(const SDL_Rect& rect) {
                        ball_bottom > rect_top && ball_top < rect_bottom);
 
   if (is_collision) {
-    std::cout << "Collision detected!" << std::endl;
 
     int overlap_left = ball_right - rect_left;
     int overlap_right = rect_right - ball_left;
@@ -113,19 +81,12 @@ bool Ball::detect_collision(const SDL_Rect& rect) {
 
     if (min_overlap == overlap_left) {
       side_hit_ = Side::LEFT;
-      std::cout << "Left" << std::endl;
-
     } else if (min_overlap == overlap_right) {
       side_hit_ = Side::RIGHT;
-      std::cout << "Right" << std::endl;
-
     } else if (min_overlap == overlap_top) {
       side_hit_ = Side::TOP;
-      std::cout << "Top" << std::endl;
-
     } else if (min_overlap == overlap_bottom) {
       side_hit_ = Side::BOTTOM;
-      std::cout << "Bottom" << std::endl;
     }
   }
   return is_collision;
