@@ -34,7 +34,7 @@ class Ball {
   int centre_x_, centre_y_;
   int radius_ = 14;
   Side side_hit_;
-  double speed_x_ = 0.5, speed_y_ = -0.5;
+  double speed_x_ = 0, speed_y_ = 0.7;
   Paddle* paddle_;
   std::array<Brick, NUM_OF_BRICKS>* brick_array_;
   unsigned int score_ = 0;

@@ -6,7 +6,8 @@
 #include <ball.hpp>
 #include <brick.hpp>
 #include <paddle.hpp>
-
+#include <string>
+enum class MenuItem{ start = 0, exit = 1};
 class Game {
  public:
   void run();
@@ -20,9 +21,11 @@ class Game {
   void quit();
   void load_bckground();
   void render_score();
+  void handle_menu_input();
+  void render_menu();
+  void display_text(const std::string& text, int x, int y, int size, SDL_Color color, bool centered);
   const int window_width_ = 1920, window_height_ = 1080;
   bool running_ = true;
-  int score;
   SDL_Window* window_;
   SDL_Renderer* renderer_;
   Paddle paddle_;
@@ -32,4 +35,7 @@ class Game {
   TTF_Font* font_;
   SDL_Texture* texture_;
   SDL_Texture* background_texture_;
+  bool in_menu_ = true;
+  bool game_in_progress_ = false;
+  int selected_menu_item_ = 0;
 };
