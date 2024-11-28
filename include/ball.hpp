@@ -36,12 +36,12 @@ class Ball {
   int centre_x_, centre_y_;
   int radius_ = 14;
   Side side_hit_;
-  double speed_x_ = 0, speed_y_ = 0.7;
+  float speed_x_ = 0, speed_y_ = 0.9;
   Paddle* paddle_;
   std::array<Brick, NUM_OF_BRICKS>* brick_array_;
   unsigned int score_ = 0;
   SDL_Renderer* renderer_;
   SDL_Texture* texture_;
   SDL_Rect rect_;
-  bool hit_bottom_;
+  bool hit_bottom_=false;
 };
