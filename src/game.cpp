@@ -101,6 +101,7 @@ void Game::initialize() {
 
   paddle_ = Paddle(window_width_, window_height_, renderer_);
   initialize_bricks();
+  Brick::load_texture(renderer_);
   ball_ = Ball(window_width_, window_height_, &paddle_, &brick_, renderer_);
   running_ = true;
 }
@@ -190,14 +191,14 @@ void Game::handle_menu_input() {
     if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
       { SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP); }
     }
-    if (event.type == SDL_KEYUP &&
+    if (event.type == SDL_KEYDOWN &&
         (event.key.keysym.scancode == SDL_SCANCODE_DOWN ||
          event.key.keysym.scancode == SDL_SCANCODE_S)) {
       if (selected_menu_item_ + 1 <= 2) {
         selected_menu_item_++;
         if (!game_in_progress_) selected_menu_item_ = 1;
       }
-    } else if (event.type == SDL_KEYUP &&
+    } else if (event.type == SDL_KEYDOWN &&
                (event.key.keysym.scancode == SDL_SCANCODE_UP ||
                 event.key.keysym.scancode == SDL_SCANCODE_W)) {
       if (selected_menu_item_ - 1 >= 0) selected_menu_item_--;

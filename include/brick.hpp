@@ -14,7 +14,6 @@ class Brick {
     renderer_ = renderer;
     health_ = health;
     initial_health_ = health;
-    load_texture();
   }
   void render();
   int get_x() { return x_; }
@@ -28,7 +27,7 @@ class Brick {
     if (health_ <= 0) is_alive_ = false;
   }
   void reset();
-  void load_texture();
+  static void load_texture(SDL_Renderer* renderer);
 
  private:
   int x_, y_;
@@ -37,6 +36,6 @@ class Brick {
   int width_, height_;
   SDL_Renderer* renderer_;
   SDL_Rect rect_;
-  SDL_Texture* texture_;
+  static SDL_Texture* texture_;
   int initial_health_;
 };
