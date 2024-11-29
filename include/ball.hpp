@@ -43,5 +43,5 @@ class Ball {
   SDL_Renderer* renderer_;
   SDL_Texture* texture_;
   SDL_Rect rect_;
-  bool hit_bottom_=false;
+  bool hit_bottom_ = false;
 };
