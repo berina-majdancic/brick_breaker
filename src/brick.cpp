@@ -2,10 +2,12 @@
 
 #include <brick.hpp>
 SDL_Texture* Brick::texture_ = nullptr;
-void Brick::render() {
+bool Brick::render() {
   if (is_alive_) {
     SDL_RenderCopy(renderer_, texture_, nullptr, &rect_);
+    return 1;
   }
+  return 0;
 }
 void Brick::load_texture(SDL_Renderer* renderer) {
   SDL_Surface* tempSurface = IMG_Load("assets/images/brick.png");

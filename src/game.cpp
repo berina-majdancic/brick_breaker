@@ -45,11 +45,11 @@ void Game::render() {
   SDL_RenderCopy(renderer_, background_texture_, NULL, NULL);
 
   render_score();
-
-  for (int i = 0; i < NUM_OF_BRICKS; i++) {
-    brick_[i].render();
+  bool win = true;
+  for (auto &brick: brick_) {
+    if (brick.render()) win = false;
   }
-
+  if (win) game_won();
   paddle_.render();
   ball_.render();
   ball_.move(delta_time_);
@@ -130,17 +130,15 @@ void Game::handle_input() {
 void Game::initialize_bricks() {
   int x = 10, y = 10;
   int health = 1;
-  int brick_width = 100;
-
   int row = 0;
-  for (int i = 0; i < NUM_OF_BRICKS; i++) {
-    brick_[i] = Brick(renderer_, x, y, health);
-    x += brick_[i].get_width() + 10;
+  for (auto &brick:brick_) {
+    brick = Brick(renderer_, x, y, health);
+    x += brick.get_width() + 10;
 
-    if (x + brick_[i].get_width() - (10 * row + 1) >=
-        window_width_ - (float(brick_[i].get_width()) / 1.5 * row)) {
-      x = (float(brick_[i].get_width()) / 1.5 * (row + 1)) - (10 * row + 1);
-      y += brick_[i].get_height() + 5;
+    if (x + brick.get_width() - (10 * row + 1) >=
+        window_width_ - (float(brick.get_width()) / 1.5 * row)) {
+      x = (float(brick.get_width()) / 1.5 * (row + 1)) - (10 * row + 1);
+      y += brick.get_height() + 5;
       row++;
     }
   }
@@ -264,8 +262,8 @@ void Game::render_score() {
 double Game::calculate_delta_time(Uint64 current_time, Uint64 last_time) {
   double delta_time = (double)((current_time - last_time) * 1000 /
                                (double)SDL_GetPerformanceFrequency());
-  if (delta_time < 16.67) {
-    SDL_Delay(static_cast<Uint32>(16.67 - delta_time));
+  if (delta_time < 6.94) {
+    SDL_Delay(static_cast<Uint32>(6.94 - delta_time));
   }
   delta_time = (double)((current_time - last_time) * 1000 /
                         (double)SDL_GetPerformanceFrequency());
@@ -282,23 +280,23 @@ void Game::quit() {
   SDL_Quit();
 }
 
-void Game::game_over() {
+void Game::game_reset() {
   ball_.reset();
   paddle_.reset();
-  for (int i = 0; i < NUM_OF_BRICKS; i++) brick_[i].reset();
-
-  display_text("Game over!", window_width_ / 2, window_height_ / 3 * 2, 50,
-               {255, 255, 255}, true);
-  SDL_RenderPresent(renderer_);
+  for(auto &brick: brick_) brick.reset();
   render();
-  SDL_Delay(1000);
   display_text("Press anything to start again!", window_width_ / 2,
                window_height_ / 3 * 2, 30, {255, 255, 255}, true);
 
   SDL_RenderPresent(renderer_);
+  SDL_Delay(500);
 
   SDL_Event event;
   bool start = false;
+  while (SDL_PollEvent(&event)) {
+    SDL_PumpEvents();  
+    SDL_FlushEvent(SDL_KEYDOWN);
+  }
   while (!start) {
     while (SDL_PollEvent(&event)) {
       if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
@@ -311,4 +309,19 @@ void Game::game_over() {
     }
   }
   SDL_RenderClear(renderer_);
+}
+void Game::game_over() {
+  display_text("Game over!", window_width_ / 2, window_height_ / 3 * 2, 50,
+               {255, 255, 255}, true);
+  SDL_RenderPresent(renderer_);
+  SDL_Delay(1000);
+  game_reset();
+}
+
+void Game::game_won() {
+  display_text("GAME WON!", window_width_ / 2, window_height_ / 3 * 2, 50,
+               {255, 255, 255}, true);
+  SDL_RenderPresent(renderer_);
+  SDL_Delay(2000);
+  game_reset();
 }

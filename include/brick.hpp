@@ -15,7 +15,7 @@ class Brick {
     health_ = health;
     initial_health_ = health;
   }
-  void render();
+  bool render();
   int get_x() { return x_; }
   int get_y() { return y_; }
   int get_width() { return width_; }
