@@ -24,7 +24,9 @@ class Game {
   void render_menu();
   void display_text(const std::string& text, int x, int y, int size,
                     SDL_Color color, bool centered);
+  void game_reset();
   void game_over();
+  void Game::game_won();
   const int window_width_ = 1920, window_height_ = 1080;
   bool running_ = true;
   SDL_Window* window_;

@@ -37,28 +37,28 @@ void Ball::handle_window_collision() {
   if (centre_x_ - radius_ < 0) {
     centre_x_ = radius_;
     speed_x_ = -speed_x_;
-    if (0.3 > speed_x_ < -0.3)
-      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.2 > speed_y_ || speed_y_ < -0.2)
+      speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
   } else if (centre_x_ + radius_ > window_width_) {
     centre_x_ = window_width_ - radius_;
     speed_x_ = -speed_x_;
-    if (0.3 > speed_x_ < -0.3)
-      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.2 > speed_y_ || speed_y_ < -0.2)
+      speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
   }
 
   // Y
   if (centre_y_ - radius_ < 0) {
     centre_y_ = radius_;
     speed_y_ = -speed_y_;
-    if (0.3 > speed_x_ || speed_x_ < -0.3)
-      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.2 > speed_y_ || speed_y_ < -0.2)
+      speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
   } else if (centre_y_ + radius_ > window_height_) {
     hit_bottom_ = true;
     // game end
     centre_y_ = window_height_ - radius_;
     speed_y_ = -speed_y_;
-    if (0.3 > speed_x_ || speed_x_ < -0.3)
-      speed_x_ = speed_x_ > 0 ? speed_x_ + 0.3 : speed_x_ - 0.3;
+    if (0.2 > speed_y_ || speed_y_ < -0.2)
+      speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
   }
 }
 bool Ball::detect_collision(const SDL_Rect& rect) {
@@ -119,36 +119,44 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
   double angle_radians = (max_angle * hit_ratio) * (M_PI / 180.0f);
 
   double speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
-  float relative_position = (float)(centre_x_ -radius_ - rect_center_x) / (rect.w / 2) /3;
+  float relative_position =
+      (float)(centre_x_ - radius_ - rect_center_x) / float(rect.w / 2) ;
 
   switch (side) {
     case Side::TOP:
-      speed_y_ = -abs(speed * cos(angle_radians));
+      speed_y_ = -abs(speed_y_);
       speed_x_ = speed_x_ > 0 ? speed * sin(angle_radians)
-                              : -speed * sin(angle_radians);
+                              : speed * sin(angle_radians);
       break;
 
     case Side::BOTTOM:
-      speed_y_ = abs(speed * sin(angle_radians));
-      speed_x_ = speed_x_ > 0 ? speed * cos(angle_radians)
-                              : -speed * cos(angle_radians);
+      speed_y_ = abs(speed_y_);
+      if (0.2 > speed_x_ || speed_x_ < -0.2)
+        speed_x_ = speed_x_ > 0 ? speed_x_ + 0.2 : speed_x_ - 0.2;
       break;
 
     case Side::LEFT:
       if (speed_x_ < 0) {
-        speed_y_ = abs(speed * sin(angle_radians));
-        speed_x_ = speed_x_ > 0 ? speed * cos(angle_radians)
-                                : -speed * cos(angle_radians);
-      } else
+        speed_y_ = abs(speed_y_);
+        if (0.2 > speed_x_ || speed_x_ < -0.2)
+          speed_x_ = speed_x_ > 0 ? speed_x_ + 0.2 : speed_x_ - 0.2;
+      } else {
         speed_x_ = -abs(speed_x_);
+      if (0.2 > speed_y_ || speed_y_ < -0.2)
+        speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
+      }
       break;
 
-    case Side::RIGHT: 
-      if (speed_x_>0) {
+    case Side::RIGHT:
+      if (speed_x_ > 0) {
         speed_y_ = abs(speed_y_);
-        speed_x_ = speed + relative_position;
+        if (0.2 > speed_x_ || speed_x_ < -0.2)
+          speed_x_ = speed_x_ > 0 ? speed_x_ + 0.2 : speed_x_ - 0.2;
+      } else {
+        speed_x_ = abs(speed_x_);
+        if (0.2 > speed_y_ || speed_y_ < -0.2)
+          speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
       }
-      else speed_x_ = abs(speed_x_);
       break;
   }
   speed_x_ = std::min(std::max(float(-0.9), speed_x_), float(0.9));
