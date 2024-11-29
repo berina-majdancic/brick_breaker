@@ -120,7 +120,7 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
 
   double speed = sqrt((speed_x_ * speed_x_) + (speed_y_ * speed_y_));
   float relative_position =
-      (float)(centre_x_ - radius_ - rect_center_x) / float(rect.w / 2) ;
+      (float)(centre_x_ - radius_ - rect_center_x) / float(rect.w / 2);
 
   switch (side) {
     case Side::TOP:
@@ -142,8 +142,8 @@ void Ball::change_angle(const SDL_Rect& rect, Side side) {
           speed_x_ = speed_x_ > 0 ? speed_x_ + 0.2 : speed_x_ - 0.2;
       } else {
         speed_x_ = -abs(speed_x_);
-      if (0.2 > speed_y_ || speed_y_ < -0.2)
-        speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
+        if (0.2 > speed_y_ || speed_y_ < -0.2)
+          speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
       }
       break;
 

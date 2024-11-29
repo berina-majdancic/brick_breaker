@@ -21,3 +21,7 @@ void Brick::reset() {
   health_ = initial_health_;
   is_alive_ = true;
 }
+void Brick::damage() {
+  health_--;
+  if (health_ <= 0) is_alive_ = false;
+}

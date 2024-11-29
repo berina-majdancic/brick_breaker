@@ -11,7 +11,7 @@ void Game::run() {
   Uint64 current_time, last_time = SDL_GetPerformanceCounter();
   delta_time_ = 0;
   load_bckground();
-
+  play_game_start_audio();
   while (running_) {
     current_time = SDL_GetPerformanceCounter();
 
@@ -46,8 +46,16 @@ void Game::render() {
 
   render_score();
   bool win = true;
-  for (auto &brick: brick_) {
-    if (brick.render()) win = false;
+  int brick_counter = 0;
+  for (auto& brick : brick_) {
+    if (brick.render()) {
+      win = false;
+      brick_counter++;
+    }
+  }
+  if (brick_counter < bricks_alive_) {
+    bricks_alive_ = brick_counter;
+    play_ball_hit_audio();
   }
   if (win) game_won();
   paddle_.render();
@@ -59,6 +67,9 @@ void Game::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
               << std::endl;
+    return;
+  }
+  if (!init_audio()) {
     return;
   }
 
@@ -131,7 +142,7 @@ void Game::initialize_bricks() {
   int x = 10, y = 10;
   int health = 1;
   int row = 0;
-  for (auto &brick:brick_) {
+  for (auto& brick : brick_) {
     brick = Brick(renderer_, x, y, health);
     x += brick.get_width() + 10;
 
@@ -275,15 +286,18 @@ void Game::quit() {
     SDL_DestroyWindow(window_);
   else if (font_)
     TTF_CloseFont(font_);
+  SDL_FreeWAV(audio_buffer_);
+  SDL_CloseAudio();
   IMG_Quit();
   TTF_Quit();
   SDL_Quit();
 }
 
 void Game::game_reset() {
+  bricks_alive_ = NUM_OF_BRICKS;
   ball_.reset();
   paddle_.reset();
-  for(auto &brick: brick_) brick.reset();
+  for (auto& brick : brick_) brick.reset();
   render();
   display_text("Press anything to start again!", window_width_ / 2,
                window_height_ / 3 * 2, 30, {255, 255, 255}, true);
@@ -294,7 +308,7 @@ void Game::game_reset() {
   SDL_Event event;
   bool start = false;
   while (SDL_PollEvent(&event)) {
-    SDL_PumpEvents();  
+    SDL_PumpEvents();
     SDL_FlushEvent(SDL_KEYDOWN);
   }
   while (!start) {
@@ -311,10 +325,13 @@ void Game::game_reset() {
   SDL_RenderClear(renderer_);
 }
 void Game::game_over() {
+  play_game_over_audio();
+
   display_text("Game over!", window_width_ / 2, window_height_ / 3 * 2, 50,
                {255, 255, 255}, true);
   SDL_RenderPresent(renderer_);
   SDL_Delay(1000);
+
   game_reset();
 }
 
@@ -324,4 +341,53 @@ void Game::game_won() {
   SDL_RenderPresent(renderer_);
   SDL_Delay(2000);
   game_reset();
+}
+bool Game::init_audio() {
+  if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+    std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
+              << '\n';
+    return false;
+  }
+  SDL_AudioSpec desiredSpec;
+  SDL_zero(desiredSpec);
+  desiredSpec.freq = 44100;
+  desiredSpec.format = AUDIO_S16SYS;
+  desiredSpec.channels = 2;
+  desiredSpec.samples = 2048;
+  desiredSpec.callback = nullptr;
+  audio_device_ = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &audio_spec_, 0);
+  if (audio_device_ == 0) {
+    std::cerr << "SDL_OpenAudioDevice failed: " << SDL_GetError() << '\n';
+    return false;
+  }
+  return true;
+}
+
+bool Game::load_wav_file(const char* file) {
+  if (SDL_LoadWAV(file, &audio_spec_, &audio_buffer_, &audio_length_) ==
+      nullptr) {
+    std::cerr << "Failed to load WAV file: " << SDL_GetError() << '\n';
+    return false;
+  }
+  return true;
+}
+
+void Game::play_game_over_audio() {
+  if (!load_wav_file("assets/audio/game_over.wav")) return;
+
+  SDL_QueueAudio(audio_device_, audio_buffer_, audio_length_);
+  SDL_PauseAudioDevice(audio_device_, 0);
+}
+void Game::play_ball_hit_audio() {
+  if (!load_wav_file("assets/audio/ball_hit.wav")) return;
+
+  SDL_ClearQueuedAudio(audio_device_);
+  SDL_QueueAudio(audio_device_, audio_buffer_, audio_length_);
+  SDL_PauseAudioDevice(audio_device_, 0);
+}
+void Game::play_game_start_audio() {
+  if (!load_wav_file("assets/audio/bleep.wav")) return;
+
+  SDL_QueueAudio(audio_device_, audio_buffer_, audio_length_);
+  SDL_PauseAudioDevice(audio_device_, 0);
 }
