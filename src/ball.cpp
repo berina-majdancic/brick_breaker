@@ -54,7 +54,6 @@ void Ball::handle_window_collision() {
       speed_y_ = speed_y_ > 0 ? speed_y_ + 0.2 : speed_y_ - 0.2;
   } else if (centre_y_ + radius_ > window_height_) {
     hit_bottom_ = true;
-    // game end
     centre_y_ = window_height_ - radius_;
     speed_y_ = -speed_y_;
     if (0.2 > speed_y_ || speed_y_ < -0.2)

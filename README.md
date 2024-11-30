@@ -21,7 +21,11 @@ For Unix
     SDL2_image
 
 ![image](https://github.com/user-attachments/assets/fd83d751-3fed-4a2e-8e67-b31450799e8d)
+
 ![image](https://github.com/user-attachments/assets/cfca8d3d-f6e5-413c-97dd-9c94b162eeda)
+
 ![image](https://github.com/user-attachments/assets/09e93436-4915-448a-90d3-24e993441949)
+
 ![image](https://github.com/user-attachments/assets/e81079eb-a10b-4dda-bf52-b570913e782e)
+
 ![image](https://github.com/user-attachments/assets/f1aefc95-17fd-47e8-8154-62300e3174a6)
