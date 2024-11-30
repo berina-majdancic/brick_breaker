@@ -24,9 +24,9 @@ class Paddle {
   int get_height() { return height_; }
   SDL_Rect get_rect() { return rect_; }
   void reset();
+  void load_texture();
 
  private:
-  void Paddle::load_texture();
   int window_width_, window_height_;
   int width_, height_;
   int x_, y_;
