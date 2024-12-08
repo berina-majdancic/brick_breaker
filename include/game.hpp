@@ -26,9 +26,11 @@ class Game {
   void game_won();
   bool init_audio();
   bool load_wav_file(const char* file);
+  void load_level(int level);
   inline void play_game_over_audio();
   inline void play_ball_hit_audio();
   inline void play_game_start_audio();
+  bool check_win();
   void display_text(const std::string& text, int x, int y, int size,
                     SDL_Color color, bool centered);
   double calculate_delta_time(Uint64 current_time, Uint64 last_time);
@@ -38,13 +40,15 @@ class Game {
   SDL_Renderer* renderer_;
   Paddle paddle_;
   Ball ball_;
-  std::array<Brick, NUM_OF_BRICKS> brick_;
+  std::array<Brick, NUM_OF_BRICKS> bricks_;
   double delta_time_;
   TTF_Font* font_;
   SDL_Texture* background_texture_;
   bool in_menu_ = true;
   bool game_in_progress_ = false;
+  bool in_levels_menu_ = false;
   int selected_menu_item_ = 0;
+  int level_;
   int bricks_alive_ = NUM_OF_BRICKS;
   Uint8* audio_buffer_;
   Uint32 audio_length_;
